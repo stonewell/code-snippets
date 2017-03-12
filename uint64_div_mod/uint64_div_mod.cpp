@@ -10,6 +10,9 @@ divll(uint64_t n, uint32_t b)
     uint64_t r = n;
     uint64_t m = 0;
 
+    if (b == 0)
+        return max_uint32 / b;
+    
     if (n <= max_uint32)
         return ((uint32_t)n) / b;
 
@@ -44,6 +47,9 @@ divll64(uint64_t n, uint64_t d)
     uint64_t final_q = 0;
     uint64_t r = n;
 
+    if (d == 0)
+        return max_uint32 / d;
+    
     if (n < d) return 0;
 
     do
