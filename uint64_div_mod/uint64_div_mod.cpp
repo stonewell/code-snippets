@@ -52,9 +52,6 @@ divll64(uint64_t n, uint64_t d)
 
     if (n < d) return 0;
 
-    if (d <= max_uint32)
-        return divll(n, (uint32_t)d);
-
     do
     {
         uint64_t q = 1;
@@ -150,6 +147,20 @@ int main()
               << "," << p << "%" << dddd
               << "=" << (p % dddd)
               << "," << modll(p, 1)
+              << ",p is uint64_t:" << (p>max_uint32)
+              << std::endl;
+
+    p = (uint64_t)(((uint64_t)max_uint32) << 32) + max_uint32;
+    d = (max_uint32 >> 1)+1;
+
+    std::cout << p << " / " << d
+              << "=" << (p / d)
+              << ",divll=" << divll(p, d)
+              << ",divll64=" << divll64(p, d)
+              << "," << p << "%" << d
+              << "=" << (p % d)
+              << ",modll=" << modll(p, d)
+              << ",modll64=" << modll64(p, d)
               << ",p is uint64_t:" << (p>max_uint32)
               << std::endl;
 }
