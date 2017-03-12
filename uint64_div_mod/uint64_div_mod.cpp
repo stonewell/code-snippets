@@ -51,7 +51,7 @@ divll64(uint64_t n, uint64_t d)
         uint64_t q = 1;
         uint64_t tmp_n = r, tmp_d = d, tmp_last_d = d;
 
-        while(tmp_n > d)
+        while(tmp_n >= d)
         {
             tmp_n >>= 1;
             q <<= 1;
@@ -96,6 +96,28 @@ int main()
               << "," << p << "%" << dd
               << "=" << (p % dd)
               << "," << modll64(p, dd)
+              << ",p is uint64_t:" << (p>max_uint32)
+              << std::endl;
+
+    uint64_t ddd = p;
+
+    std::cout << p << " / " << ddd
+              << "=" << (p / ddd)
+              << "," << divll64(p, ddd)
+              << "," << p << "%" << ddd
+              << "=" << (p % ddd)
+              << "," << modll64(p, ddd)
+              << ",p is uint64_t:" << (p>max_uint32)
+              << std::endl;
+    
+    uint64_t dddd = 1;
+
+    std::cout << p << " / " << dddd
+              << "=" << (p / dddd)
+              << "," << divll64(p, dddd)
+              << "," << p << "%" << dddd
+              << "=" << (p % dddd)
+              << "," << modll64(p, dddd)
               << ",p is uint64_t:" << (p>max_uint32)
               << std::endl;
 }
