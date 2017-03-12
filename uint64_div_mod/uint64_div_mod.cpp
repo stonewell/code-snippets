@@ -12,7 +12,7 @@ divll(uint64_t n, uint32_t b)
 
     if (b == 0)
         return max_uint32 / b;
-    
+
     if (n <= max_uint32)
         return ((uint32_t)n) / b;
 
@@ -30,9 +30,9 @@ divll(uint64_t n, uint32_t b)
         r = (uint64_t)r1 * (uint64_t)r2 + r1 + r3;
         m += (d << 32) + r1 * e + c;
     }
-    while (r >= b);
+    while (r > max_uint32);
 
-    return m;
+    return m + (r / b);
 }
 
 uint64_t
@@ -49,8 +49,11 @@ divll64(uint64_t n, uint64_t d)
 
     if (d == 0)
         return max_uint32 / d;
-    
+
     if (n < d) return 0;
+
+    if (d <= max_uint32)
+        return divll(n, (uint32_t)d);
 
     do
     {
@@ -87,10 +90,24 @@ int main()
 
     std::cout << p << " / " << d
               << "=" << (p / d)
-              << "," << divll64(p, d)
+              << ",divll=" << divll(p, d)
+              << ",divll64=" << divll64(p, d)
               << "," << p << "%" << d
               << "=" << (p % d)
-              << "," << modll(p, d)
+              << ",modll=" << modll(p, d)
+              << ",modll64=" << modll64(p, d)
+              << ",p is uint64_t:" << (p>max_uint32)
+              << std::endl;
+
+    d = max_uint32;
+    std::cout << p << " / " << d
+              << "=" << (p / d)
+              << ",divll=" << divll(p, d)
+              << ",divll64=" << divll64(p, d)
+              << "," << p << "%" << d
+              << "=" << (p % d)
+              << ",modll=" << modll(p, d)
+              << ",modll64=" << modll64(p, d)
               << ",p is uint64_t:" << (p>max_uint32)
               << std::endl;
 
@@ -115,7 +132,7 @@ int main()
               << "," << modll64(p, ddd)
               << ",p is uint64_t:" << (p>max_uint32)
               << std::endl;
-    
+
     uint64_t dddd = 1;
 
     std::cout << p << " / " << dddd
@@ -124,6 +141,15 @@ int main()
               << "," << p << "%" << dddd
               << "=" << (p % dddd)
               << "," << modll64(p, dddd)
+              << ",p is uint64_t:" << (p>max_uint32)
+              << std::endl;
+
+    std::cout << p << " / " << dddd
+              << "=" << (p / dddd)
+              << "," << divll(p, 1)
+              << "," << p << "%" << dddd
+              << "=" << (p % dddd)
+              << "," << modll(p, 1)
               << ",p is uint64_t:" << (p>max_uint32)
               << std::endl;
 }
