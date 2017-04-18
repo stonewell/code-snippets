@@ -5,6 +5,7 @@ the code piece draw circle at given center point with specified radius
 the python open code is based on
 
 https://usingcpp.wordpress.com/2016/03/19/drawing-circles-with-opengl/
+
 https://rubendv.be/blog//opengl/drawing-antialiased-circles-in-opengl/
 
 Thanks for these authors great tutorial
