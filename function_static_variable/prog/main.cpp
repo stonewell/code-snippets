@@ -1,6 +1,7 @@
 #include "foo.h"
 #include <iostream>
 #include <dlfcn.h>
+#include <cstring>
 
 void call_lib(const char * lib_path, const char * msg, bool unload = true, const char * func_name = "CallBar") {
     void * handle = dlopen(lib_path, RTLD_NOW | RTLD_LOCAL);
@@ -29,12 +30,8 @@ void call_lib(const char * lib_path, const char * msg, bool unload = true, const
 
     func(msg);
 
-    // MyClass::GetInstance()->MyFunc(msg);
-
     if (unload)
         dlclose(handle);
-
-    // MyClass::GetInstance()->MyFunc(msg);
 }
 
 int main(int argc, char ** argv) {
@@ -43,9 +40,19 @@ int main(int argc, char ** argv) {
         exit(1);
     }
 
-    std::cout << std::endl << "run first round, call CallBar3 which do not trigger Singleton construct" << std::endl;
+    bool init_static_variable_in_first_round = false;
+    if (argc >= 4) {
+        init_static_variable_in_first_round = !strcasecmp("true", argv[3]);
+    }
 
-    call_lib(argv[1], "first round", true, "CallBar3");
+    if (init_static_variable_in_first_round) {
+        std::cout << std::endl << "run first round, call CallBar which do trigger Singleton construct" << std::endl;
+    }
+    else {
+        std::cout << std::endl << "run first round, call CallBar3 which do not trigger Singleton construct" << std::endl;
+    }
+
+    call_lib(argv[1], "first round", true, init_static_variable_in_first_round ? "CallBar" : "CallBar3");
 
     std::cout << std::endl << "run second round, call CallBar trigger singleton construct, but dlclose will destruct the singleton" << std::endl;
 

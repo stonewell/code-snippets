@@ -1,10 +1,9 @@
 .PHONY: all clean
+
+DIRS = lib lib_2 lib_3 prog
+
 all:
-	make -C lib
-	make -C prog
-	make -C lib_2
+	$(foreach var, $(DIRS), make -C $(var);)
 
 clean:
-	make -C lib clean
-	make -C lib_2 clean
-	rm -f prog/prog
+	$(foreach var, $(DIRS), make -C $(var) clean;)

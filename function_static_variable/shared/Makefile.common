@@ -1,0 +1,12 @@
+DEBUG_FLAGS = -g -O0
+LD_FLAGS = -Wl,--build-id -Wl,--gc-sections
+CXX_FLAGS = -fvisibility-inlines-hidden $(LD_FLAGS) -std=c++11 $(DEBUG_FLAGS) -fPIC
+
+all: clean foo
+
+foo: $(SRC_DIR)/foo.cpp $(SRC_DIR)/foo.h
+	$(CXX) -shared $(CXX_FLAGS) $(EXTRA_FLAGS) $(SRC_DIR)/foo.cpp -o libfoo_global.so
+	$(CXX) -shared $(CXX_FLAGS) $(EXTRA_FLAGS) $(SRC_DIR)/foo.cpp -o libfoo_global_2.so
+
+clean:
+	$(RM) *.o *.so *.out
