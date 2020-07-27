@@ -58,8 +58,8 @@ int main(int argc, char ** argv) {
 
     call_lib(argv[2], "second round", true, "CallBar");
 
-    std::cout << std::endl << "run third round" << std::endl;
+    std::cout << std::endl << "run third round, if static variable not init in first round, crash here" << std::endl;
 
-    call_lib(argv[2], "third round", true, "CallBar");
+    call_lib(argv[1], "third round", true, "CallBar");
     return 0;
 }
