@@ -1,0 +1,5 @@
+{
+    global: CallBar;
+    CallBar3;
+    local: *;
+};
