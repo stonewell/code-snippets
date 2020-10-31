@@ -22,6 +22,7 @@ index_tpl = '''<package xmlns="http://www.idpf.org/2007/opf" version="2.0" uniqu
     <dc:title>%(title)s</dc:title>
     <dc:identifier id="BookId">%(title)s</dc:identifier>
     <dc:creator opf:file-as="%(author)s" opf:role="aut">%(author)s</dc:creator>
+    %(cover)s
    </metadata>
   <manifest>
     <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
@@ -161,12 +162,28 @@ class EPubBuilder(object):
 
         self._content.build_epub(self)
 
+        # set cover image
+        cover = ''
+        if 'cover-image' in self._config:
+            cover_image = self._config['cover-image']
+            cover_image = os.path.abspath(os.path.expanduser(os.path.expandvars(cover_image)))
+
+            if os.path.isfile(cover_image):
+                suffix = Path(cover_image).suffix
+                suffix = suffix[1:] if len(suffix) > 1 else 'jpeg'
+
+                self._manifest += '''<item id="cover_jpg" properties="cover-image" href="images/cover.%s" media-type="image/jpeg" />\n''' % suffix
+
+                epub.write(cover_image, 'images/cover.%s' % suffix)
+                cover = '<meta name="cover" content="cover_jpg"/>'
+
         # Finally, write the index
         epub.writestr('content.opf', index_tpl % {
             'manifest': self._manifest,
             'spine': self._spine,
             'title': self._title,
             'author': self._author,
+            'cover': cover,
         })
 
         #epub.writestr('nav.xhtml', nav_template % {'toc': toc})
