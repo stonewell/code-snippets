@@ -11,8 +11,8 @@ def args_parser():
     parser = argparse.ArgumentParser(prog='run_thumbsup',
                                      description='generate static site for photo gallery')
     parser.add_argument('-c', '--config', type=argparse.FileType('r'), help='config file to generate photo gallery', required=False)
-    parser.add_argument('-i', '--input', type=str, help='config file to generate photo gallery', required=False)
-    parser.add_argument('-o', '--output', type=str, help='config file to generate photo gallery', required=False)
+    parser.add_argument('-i', '--input', type=str, help='directory contains photo files to generate photo gallery', required=False)
+    parser.add_argument('-o', '--output', type=str, help='directory to save generate photo gallery site', required=False)
     parser.add_argument('-v', '--verbose', action='count', help='print debug information', required=False, default=0)
 
     return parser
