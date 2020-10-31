@@ -6,13 +6,15 @@ import tempfile
 import json
 import re
 
+from epub_builder import EPubBuilder
+
 
 def args_parser():
     parser = argparse.ArgumentParser(prog='txt2epub',
                                      description='generate epub from txt, generate toc based on regex text')
     parser.add_argument('-c', '--config', type=argparse.FileType('r'), help='config file', required=False)
     parser.add_argument('-i', '--input', type=str, help='input text file', required=False)
-    parser.add_argument('-o', '--output', type=str, help='output epub file', required=False)
+    parser.add_argument('-o', '--output', type=str, help='output epub directory', required=False, default=".")
     parser.add_argument('-v', '--verbose', action='count', help='print debug information', required=False, default=0)
 
     return parser
@@ -47,14 +49,45 @@ class Volume(object):
         self.parent_volume = None
 
         self._chapters = [Chapter('')]
+        self._default_chapter = None
 
     def add_line(self, line):
+        if line == '\n' or line == '\r' or line == '\r\n':
+            return
+
+        logging.debug('volume add line:[%s]', line)
+
         self._chapters[-1].add_line(line)
 
     def append(self, obj):
         self._chapters.append(obj)
         obj.parent_volume = self
 
+    def build_epub(self, builder):
+        has_chapter = False
+        for c in self._chapters:
+            if c.valid():
+                has_chapter = True
+                break
+
+        builder.new_volume(self._title)
+
+        if not has_chapter:
+            c = Chapter('')
+            c.add_line('')
+            c.build_epub(builder)
+
+        for c in self._chapters:
+            c.build_epub(builder)
+
+        builder.end_volume(self._title)
+
+    def valid(self):
+        for c in self._chapters:
+            if c.valid():
+                return True
+
+        return False
 
 class Chapter(object):
     def __init__(self, title):
@@ -77,6 +110,13 @@ class Chapter(object):
 
     def append(self, obj):
         self.parent_volume.append(obj)
+
+    def build_epub(self, builder):
+        if len(self._content) > 0:
+            builder.new_chapter(self._title, self._content)
+
+    def valid(self):
+        return len(self._content) > 0
 
 def process_input(config):
     with open(config['input'], 'r') as f_in:
@@ -123,7 +163,7 @@ def __match(config, line, re_key, expand_key, kcls):
     return None
 
 def generate_epub(config, content):
-    pass
+    EPubBuilder(config, content).build()
 
 if __name__ == '__main__':
     parser = args_parser().parse_args()
