@@ -79,6 +79,84 @@ content_html_footer = '''
 </html>
 '''
 
+class Volume(object):
+    def __init__(self, title):
+        self._title = title
+        logging.debug('create new volume:[%s]', title)
+
+        self.parent_volume = None
+
+        self._chapters = [Chapter('')]
+        self._default_chapter = None
+
+    def add_line(self, line):
+        if line == '\n' or line == '\r' or line == '\r\n':
+            return
+
+        logging.debug('volume add line:[%s]', line)
+
+        self._chapters[-1].add_line(line)
+
+    def append(self, obj):
+        self._chapters.append(obj)
+        obj.parent_volume = self
+
+    def build_epub(self, builder):
+        has_chapter = False
+        for c in self._chapters:
+            if c.valid():
+                has_chapter = True
+                break
+
+        builder.new_volume(self._title)
+
+        if not has_chapter:
+            c = Chapter('')
+            c.add_line('')
+            c.build_epub(builder)
+
+        for c in self._chapters:
+            c.build_epub(builder)
+
+        builder.end_volume(self._title)
+
+    def valid(self):
+        for c in self._chapters:
+            if c.valid():
+                return True
+
+        return False
+
+class Chapter(object):
+    def __init__(self, title):
+        logging.debug('create new Chapter:[%s]', title)
+        self._title = title
+        self._content = []
+        self._parent_volume = None
+
+    def __get_parent(self):
+        return self._parent_volume
+
+    def __set_parent(self, v):
+        logging.debug('update %s \'s parent volume %s', self._title, v._title)
+        self._parent_volume = v
+
+    parent_volume = property(__get_parent, __set_parent)
+
+    def add_line(self, line):
+        self._content.append(line)
+
+    def append(self, obj):
+        self.parent_volume.append(obj)
+
+    def build_epub(self, builder):
+        if len(self._content) > 0:
+            builder.new_chapter(self._title, self._content)
+
+    def valid(self):
+        return len(self._content) > 0
+
+
 class EPubBuilder(object):
     def __init__(self, config, content):
         super().__init__()
