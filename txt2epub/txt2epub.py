@@ -65,16 +65,22 @@ def process_input(config):
 
 
 def match_volume(config, line):
-    return __match(config, line, 'volume_regex', 'volume_expand', Volume)
+    return __match(config, line, 'volume_regex', 'volume_expand', 'volume_ignore', Volume)
 
 
 def match_chapter(config, line):
-    return __match(config, line, 'chapter_regex', 'chapter_expand', Chapter)
+    return __match(config, line, 'chapter_regex', 'chapter_expand', 'chapter_ignore', Chapter)
 
 
-def __match(config, line, re_key, expand_key, kcls):
+def __match(config, line, re_key, expand_key, ignore_key, kcls):
     if re_key not in config:
         return None
+
+    if ignore_key in config:
+        m = re.match(config[ignore_key], line)
+
+        if m:
+            return None
 
     m = re.match(config[re_key], line)
 
