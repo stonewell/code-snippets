@@ -59,10 +59,15 @@ def process_input(config):
             if obj:
                 current = obj
             else:
-                current.add_line(line)
+                current.add_line(norm_line(line))
 
         return content
 
+def norm_line(line):
+  def repl(match_obj):
+    return chr(int(match_obj.group(1)))
+
+  return re.sub('&#([0123456789]+);', repl, line)
 
 def match_volume(config, line):
     return __match(config, line, 'volume_regex', 'volume_expand', 'volume_ignore', Volume)
