@@ -13,7 +13,7 @@ FREERDP_ARGS = [
     '/network:lan',
     '/rfx',
     '/f',
-    '/gfx:AVC444,thinclient,progressive',
+    '/gfx:AVC420,thinclient,progressive',
     '/gdi:hw',
     '/sound',
     '/cert:ignore',
