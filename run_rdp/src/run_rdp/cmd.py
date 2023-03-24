@@ -13,7 +13,6 @@ FREERDP_ARGS = [
     '/network:lan',
     '/rfx',
     '/f',
-    '/gfx:AVC444,thinclient,progressive',
     '/gdi:hw',
     '/sound',
     '/cert:ignore',
@@ -50,6 +49,12 @@ def parse_arguments():
                       type=str,
                       required=False,
                       default='')
+  parser.add_argument("--gfx",
+                      help="gfx parameters",
+                      type=str,
+                      choices=['AVC444', 'AVC420'],
+                      required=False,
+                      default='AVC444')
   return parser.parse_args()
 
 
@@ -66,6 +71,7 @@ def main():
     f'/u:{args.user}',
     f'/p:{args.passwd}',
     f'/v:{args.server}',
+    f'/gfx:{args.gfx},thinclient,progressive',
   ]
 
   if len(args.proxy) > 0:
