@@ -26,9 +26,14 @@ def read_last_set_time(fd):
     logging.exception('unable to read last set time')
     return None
 
+def open_lock_file():
+  try:
+    return open(run_file, 'r+', encoding='utf-8')
+  except:
+    return open(run_file, 'w', encoding='utf-8')
 
 def write_last_set_time(job):
-  with open(run_file, 'r+', encoding='utf-8') as fd:
+  with open_lock_file() as fd:
     try:
        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
