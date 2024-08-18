@@ -9,7 +9,6 @@ import subprocess
 FREERDP_ARGS = [
     '/network:broadband-high',
     '/rfx',
-    '/f',
     '/gdi:hw',
     '/sound',
     '/cert:ignore',
