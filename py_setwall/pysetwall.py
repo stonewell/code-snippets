@@ -6,6 +6,7 @@ import subprocess
 import random
 import pathlib
 import shutil
+import sys
 
 
 random.seed()
@@ -39,7 +40,8 @@ def write_last_set_time(job):
 
        last_run = read_last_set_time(fd)
 
-       if last_run is None or last_run + interval <  datetime.datetime.now():
+       force_run = (len(sys.argv) > 1 and sys.argv[1] == '1')
+       if last_run is None or last_run + interval <  datetime.datetime.now() or force_run:
          job()
 
          fd.seek(0)
