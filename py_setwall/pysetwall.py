@@ -61,8 +61,7 @@ def get_wallpaper_file():
 
 def set_wall():
   new_wallpaper_file = get_wallpaper_file()
-  shutil.copyfile(new_wallpaper_file.as_posix(), wallpaper_path)
-
+  subprocess.run(['convert', new_wallpaper_file.as_posix(), wallpaper_path])
   subprocess.run(set_wall_cmd, check=True)
 
 def main():
