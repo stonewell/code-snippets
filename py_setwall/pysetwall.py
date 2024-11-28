@@ -18,13 +18,25 @@ image_directory = '/media/share/linux/wallpapers'
 set_wall_cmd = [os.path.expanduser('~/.setwall')]
 wallpaper_path = os.path.expanduser('~/Pictures/wal.jpg')
 
+def do_logging():
+  if len(sys.argv) <= 1:
+    return False
+
+  for v in sys.argv:
+    if v == '-d':
+      return True
+
+  return False
+
 def read_last_set_time(fd):
+
   try:
     line = fd.readline()
 
     return datetime.datetime.fromisoformat(line)
   except:
-    logging.exception('unable to read last set time')
+    if do_logging():
+      logging.exception('unable to read last set time')
     return None
 
 def open_lock_file():
@@ -47,7 +59,8 @@ def write_last_set_time(job):
          fd.seek(0)
          fd.write(datetime.datetime.now().isoformat())
     except:
-      logging.exception('unable to lock file to write')
+      if do_logging():
+        logging.exception('unable to lock file to write')
     finally:
        fcntl.flock(fd, fcntl.LOCK_UN | fcntl.LOCK_NB)
 
@@ -59,10 +72,31 @@ def get_wallpaper_file():
 
   return random.choice(image_files)
 
+def print_output(r):
+  if not do_logging():
+    return
+
+  try:
+    o = r.stdout.decode('UTF-8')
+    e = r.stderr.decode('UTF-8')
+
+    if len(o) > 0:
+      print(o)
+
+    if len(e) > 0:
+      print(e)
+  except:
+    logging.exception('decode output failed')
+
 def set_wall():
   new_wallpaper_file = get_wallpaper_file()
-  subprocess.run(['convert', new_wallpaper_file.as_posix(), wallpaper_path], check=True)
-  subprocess.run(set_wall_cmd, check=True)
+  r = subprocess.run(['convert', new_wallpaper_file.as_posix(), wallpaper_path], check=True, capture_output=True)
+
+  print_output(r)
+
+  r = subprocess.run(set_wall_cmd, check=True, capture_output=True)
+
+  print_output(r)
 
 def main():
   write_last_set_time(set_wall)
